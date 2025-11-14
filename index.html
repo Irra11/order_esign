@@ -3,8 +3,125 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UDID Order System</title>
+<title>Irra Esign</title>
 <style>
+    /*
+ * NOTE: The following HTML meta tag MUST be included in your <head>
+ * for proper scaling and handling of the notch/home bar areas:
+ * <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+ */
+
+/* =========================================================================
+   1. CORE STYLES: FONT, RESPONSIVENESS, BASE
+   ========================================================================= */
+
+/* Use relative units for Dynamic Type support (scales with user's text settings) */
+html {
+  font-size: 100%; /* Base for REM units (usually 16px) */
+}
+
+body {
+  /* The Apple system font stack (SF Pro) */
+  font-family: -apple-system, BlinkMacMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  
+  /* Smoother font rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* Prevents text inflation on some mobile browsers */
+  -webkit-text-size-adjust: 100%;
+  
+  /* Cleaner display of numbers (common in system fonts) */
+  font-variant-numeric: proportional-nums;
+  
+  /* Default light-mode background color (iOS system background) */
+  background-color: #f2f2f7; 
+  color: #000;
+  
+  /* Removes default body margin */
+  margin: 0;
+}
+
+/* Example Font Sizes using REM units */
+h1 {
+  font-size: 2.2rem;
+  font-weight: 700; 
+  letter-spacing: -0.015em; /* Subtle iOS heading spacing */
+  margin: 0.6em 0 0.4em 0;
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 1em;
+}
+
+/* =========================================================================
+   2. iOS UI REFINEMENTS & TOUCH BEHAVIOR
+   ========================================================================= */
+
+/* Remove the blue/gray highlight when tapping elements */
+a, button, input, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Form field reset for native appearance */
+input, textarea {
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 0;
+  /* Add padding/border/focus styles here to define the appearance */
+}
+
+/* iOS-Style Frosted Glass (common for headers/footers) */
+.ios-frosted-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 15px;
+  
+  /* Translucent background */
+  background-color: rgba(255, 255, 255, 0.9);
+  
+  /* The core frosted effect */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  
+  /* Subtle border line */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* =========================================================================
+   3. SAFE AREA INSETS (For Notched Devices)
+   ========================================================================= */
+
+/* Use environment variables for padding to avoid the notch/home bar */
+.ios-header {
+  /* Adds padding only if the area is covered by the notch */
+  padding-top: env(safe-area-inset-top, 20px); 
+}
+
+.ios-footer {
+  /* Adds padding only if the area is covered by the home indicator bar */
+  padding-bottom: env(safe-area-inset-bottom, 20px); 
+}
+
+/* =========================================================================
+   4. DARK MODE SUPPORT (Pro Feature)
+   ========================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #000;
+    color: #fff;
+  }
+  
+  .ios-frosted-bar {
+    /* Dark translucent background for the bar */
+    background-color: rgba(28, 28, 30, 0.9); 
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+}
     /* ... (Your existing CSS code goes here) ... */
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -151,7 +268,7 @@
 
 <div id="addPage" class="page active">
     <div class="container">
-        <h2>UDID Order System</h2>
+        <h2>Irra Order</h2>
         <input id="udidInput" type="text" placeholder="Enter UDID">
         <input id="dateInput" type="date">
         <select id="statusInput">
@@ -171,8 +288,8 @@
 
 <div id="listPage" class="page">
     <div class="container">
-        <h2>Order List</h2>
-        <button class="secondary" onclick="backToAdd()">← Back to Add UDID</button>
+        <h2>Irra Order List</h2>
+        <button class="secondary" onclick="backToAdd()"> Back to Add UDID</button>
         <div id="orderList"></div>
     </div>
 </div>
