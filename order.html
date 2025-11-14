@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UDID Order System</title>
+<style>
+    /* ... (Your existing CSS code goes here) ... */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 550px;
+        margin: auto;
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+
+    select, input[type="text"], input[type="date"] {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        font-size: 16px;
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 15px;
+        border: none;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    button.secondary {
+        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    }
+
+    button.secondary:hover {
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+    }
+
+    button.danger, button.edit {
+        padding: 8px 15px;
+        font-size: 14px;
+        width: auto;
+        margin-top: 10px;
+    }
+    
+    button.danger {
+        background: #e74c3c;
+        margin-right: 10px;
+    }
+
+    button.danger:hover {
+        background: #c0392b;
+    }
+
+    button.edit {
+        background: #f39c12;
+    }
+
+    button.edit:hover {
+        background: #e67e22;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .order-box {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        margin-top: 15px;
+        padding: 20px;
+        border-radius: 15px;
+        border-left: 5px solid #667eea;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+
+    .order-box:hover {
+        transform: translateX(5px);
+    }
+
+    .udid-text {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .status-text {
+        font-size: 14px;
+        color: #555;
+        margin-top: 5px;
+    }
+
+    .page {
+        display: none;
+    }
+
+    .page.active {
+        display: block;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 8px;
+    }
+
+    .status-pending { background: #f39c12; color: white; }
+    .status-processing { background: #3498db; color: white; }
+    .status-completed { background: #2ecc71; color: white; }
+    .status-cancelled { background: #95a5a6; color: white; }
+    .status-ineligible { background: #e67e22; color: white; }
+    .status-blacklist { background: #e74c3c; color: white; }
+    .status-refunded { background: #9b59b6; color: white; }
+
+    h2 {
+        color: #667eea;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+</style>
+</head>
+<body>
+
+<div id="addPage" class="page active">
+    <div class="container">
+        <h2>UDID Order System</h2>
+        <input id="udidInput" type="text" placeholder="Enter UDID">
+        <input id="dateInput" type="date">
+        <select id="statusInput">
+            <option value="">Select Order Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Processing">Processing</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Ineligible">Ineligible</option>
+            <option value="Blacklist">Blacklist</option>
+            <option value="Refunded">Refunded</option>
+        </select>
+        <button id="mainActionButton" onclick="addOrder()">Add UDID</button>
+        <button class="secondary" onclick="viewOrders()" style="margin-top: 10px;">View All Orders</button>
+    </div>
+</div>
+
+<div id="listPage" class="page">
+    <div class="container">
+        <h2>Order List</h2>
+        <button class="secondary" onclick="backToAdd()">← Back to Add UDID</button>
+        <div id="orderList"></div>
+    </div>
+</div>
+
+
+<script>
+// IMPORTANT: Use a relative path so it works with the hosted URL
+const API_URL = '/orders'; 
+let isEditing = false;
+let currentEditId = null;
+const mainActionButton = document.getElementById("mainActionButton");
+
+// --- Helper Functions ---
+
+function showPage(pageId) {
+    document.getElementById("addPage").classList.remove("active");
+    document.getElementById("listPage").classList.remove("active");
+    document.getElementById(pageId).classList.add("active");
+}
+
+function resetForm() {
+    document.getElementById("udidInput").value = "";
+    document.getElementById("statusInput").value = "";
+    document.getElementById("dateInput").value = "";
+    mainActionButton.textContent = "Add UDID";
+    isEditing = false;
+    currentEditId = null;
+}
+
+// --- API Functions ---
+
+async function fetchOrders() {
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error('Failed to fetch orders');
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        // Note: For production, avoid exposing detailed error to user
+        return [];
+    }
+}
+
+async function addOrder() {
+    let udid = document.getElementById("udidInput").value.trim();
+    let status = document.getElementById("statusInput").value.trim();
+    let date = document.getElementById("dateInput").value;
+    
+    if (udid === "" || status === "" || date === "") {
+        alert("Please fill in all fields!");
+        return;
+    }
+
+    const orderData = { udid, status, date };
+
+    try {
+        const method = isEditing ? 'PUT' : 'POST';
+        const url = isEditing ? `${API_URL}/${currentEditId}` : API_URL;
+
+        const response = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        });
+
+        if (!response.ok) throw new Error(`Server returned status: ${response.status}`);
+        
+        alert(`Order ${isEditing ? 'updated' : 'added'} successfully!`);
+        
+        resetForm();
+        viewOrders(); // Reload and show list
+        
+    } catch (error) {
+        console.error("Error processing order:", error);
+        alert(`Failed to ${isEditing ? 'update' : 'add'} order. Check server.`);
+    }
+}
+
+async function deleteOrder(id) {
+    if (confirm("Are you sure you want to delete this order?")) {
+        try {
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: 'DELETE'
+            });
+            
+            if (!response.ok) throw new Error(`Server returned status: ${response.status}`);
+            
+            alert("Order deleted successfully!");
+            renderOrders(); // Re-render the list
+            
+        } catch (error) {
+            console.error("Error deleting order:", error);
+            alert("Failed to delete order. Check server connection.");
+        }
+    }
+}
+
+// --- UI Functions ---
+
+function viewOrders() {
+    showPage("listPage");
+    renderOrders();
+}
+
+function backToAdd() {
+    showPage("addPage");
+    resetForm();
+}
+
+async function renderOrders() {
+    const orders = await fetchOrders(); // Fetch data from the backend
+    let list = document.getElementById("orderList");
+    list.innerHTML = "";
+    
+    if (orders.length === 0) {
+        list.innerHTML = "<p style='text-align: center; color: #999; margin-top: 20px;'>No orders yet</p>";
+        return;
+    }
+    
+    orders.forEach((order) => {
+        let box = document.createElement("div");
+        box.className = "order-box";
+        
+        let statusClass = "status-" + order.status.toLowerCase().replace(/\s+/g, '-');
+        
+        box.innerHTML = `
+            <div class="udid-text">UDID: ${order.udid}</div>
+            <div class="status-text">Date: ${order.date}</div>
+            <div class="status-text">Status: <span class="status-badge ${statusClass}">${order.status}</span></div>
+            <div class="button-group">
+                <button class="edit" onclick="editOrder(${order.id})">Edit</button>
+                <button class="danger" onclick="deleteOrder(${order.id})">Delete</button>
+            </div>
+        `;
+        
+        list.appendChild(box);
+    });
+}
+
+async function editOrder(id) {
+    const orders = await fetchOrders();
+    // ID comparison needs to be numeric
+    const orderToEdit = orders.find(o => o.id === id); 
+    
+    if (!orderToEdit) {
+        alert("Order not found for editing.");
+        return;
+    }
+    
+    // Populate the form with existing data
+    document.getElementById("udidInput").value = orderToEdit.udid;
+    document.getElementById("dateInput").value = orderToEdit.date;
+    document.getElementById("statusInput").value = orderToEdit.status;
+    
+    // Set edit state
+    isEditing = true;
+    currentEditId = id;
+    mainActionButton.textContent = "Save Changes";
+    
+    // Go back to add page for editing
+    showPage("addPage");
+}
+</script>
+
+</body>
+</html>
