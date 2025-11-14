@@ -221,7 +221,7 @@ input, textarea {
     }
 
     .udid-text {
-        font-size: 6px;
+        font-size: 10px;
         font-weight: bold;
         margin-bottom: 10px;
     }
@@ -254,8 +254,8 @@ input, textarea {
     .status-completed { background: #2ecc71; color: white; }
     .status-cancelled { background: #95a5a6; color: white; }
     .status-ineligible { background: #e67e22; color: white; }
-    .status-blacklist { background: #e74c3c; color: white; }
-    .status-refunded { background: #9b59b6; color: white; }
+    .status-blacklist { background: #ff1900; color: white; }
+    .status-refunded { background: #5101fd; color: white; }
 
     h2 {
         color: #667eea;
@@ -269,6 +269,7 @@ input, textarea {
 <div id="addPage" class="page active">
     <div class="container">
         <h2>Irra Order</h2>
+        <p id="currentDateDisplay" style="text-align: center; color: #764ba2; font-weight: bold; margin-bottom: 20px;"></p>
         <input id="udidInput" type="text" placeholder="Enter UDID">
         <input id="dateInput" type="date">
         <select id="statusInput">
@@ -279,7 +280,7 @@ input, textarea {
             <option value="Cancelled">Cancelled</option>
             <option value="Ineligible">Ineligible</option>
             <option value="Blacklist">Blacklist</option>
-            <option value="Refunded">Refunded</option>
+            <option value="Refunded">Waiting Approve</option>
         </select>
         <button id="mainActionButton" onclick="addOrder()">Add UDID</button>
         <button class="secondary" onclick="viewOrders()" style="margin-top: 10px;">View All Orders</button>
@@ -452,8 +453,9 @@ async function editOrder(id) {
     // Go back to add page for editing
     showPage("addPage");
 }
+
 </script>
+
 
 </body>
 </html>
-
