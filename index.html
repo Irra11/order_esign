@@ -269,7 +269,7 @@ input, textarea {
     <div class="container">
         <h2>Irra Order</h2>
         <input id="udidInput" type="text" placeholder="Enter UDID">
-        <input id="dateInput" type="date">
+      <input id="dateInput" type="text" placeholder="DD/MM/YYYY">
         <select id="statusInput">
             <option value="">Select Order Status</option>
             <option value="Pending">Pending</option>
@@ -451,9 +451,14 @@ async function editOrder(id) {
     // Go back to add page for editing
     showPage("addPage");
 }
+    // Current code assumes YYYY-MM-DD from type="date"
+let date = document.getElementById("dateInput").value; 
+// ...
+const orderData = { udid, status, date };
 
 </script>
 
 
 </body>
 </html>
+
