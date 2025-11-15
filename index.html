@@ -456,9 +456,24 @@ let date = document.getElementById("dateInput").value;
 // ...
 const orderData = { udid, status, date };
 
+
+
+
+    // server.js
+require('dotenv').config(); // Load environment variables
+const express = require('express');
+const mongoose = require('mongoose');
+// ... other requirements
+
+// Get the URI from the environment variable
+const MONGODB_URI = process.env.MONGODB_URI; 
+
+mongoose.connect(MONGODB_URI)
+    // ... rest of the connection logic
 </script>
 
 
 </body>
 </html>
+
 
