@@ -262,14 +262,51 @@ input, textarea {
         text-align: center;
         margin-bottom: 20px;
     }
+
+    .order-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 15px;
+}
+
+.order-line .label {
+    font-weight: 600;
+    color: #555;
+}
+
+.order-line .value {
+    font-weight: 600;
+    color: #333;
+}
+
+.order-line .udid {
+    word-break: break-all;
+}
+
+/* Make the card cleaner */
+.order-box {
+    background: white;
+    padding: 18px 20px;
+    border-radius: 14px;
+    border-left: 5px solid #667eea;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    margin-top: 15px;
+    transition: transform .2s;
+}
+
+.order-box:hover {
+    transform: translateX(5px);
+}
+
 </style>
 </head>
 <body>
 <div id="addPage" class="page active">
     <div class="container">
-        <h2>Irra Esin Order</h2>
+        <h2>Irra Esign Order </h2>
       <input id="dateInput" type="text" placeholder="DD/MM/YYYY">
-        <input id="udidInput" type="text" placeholder="Enter UDID">
+      <input id="udidInput" type="text" placeholder="Enter UDID">
         <select id="statusInput">
             <option value="">Select Order Status</option>
             <option value="Pending">Pending</option>
@@ -278,7 +315,7 @@ input, textarea {
             <option value="Cancelled">Cancelled</option>
             <option value="Ineligible">Ineligible</option>
             <option value="Blacklist">Blacklist</option>
-            <option value="Refunded">Waiting Approve</option>
+            <option value="Waiting for Apple approval">Waiting for Apple approval</option>
         </select>
         <button id="mainActionButton" onclick="addOrder()">Add UDID</button>
         <button class="secondary" onclick="viewOrders()" style="margin-top: 10px;">View All Orders</button>
@@ -414,15 +451,30 @@ async function renderOrders() {
         
         let statusClass = "status-" + order.status.toLowerCase().replace(/\s+/g, '-');
         
-        box.innerHTML = `
-            <div class="udid-text">UDID: ${order.udid}</div>
-            <div class="status-text">Date: ${order.date}</div>
-            <div class="status-text">Status: <span class="status-badge ${statusClass}">${order.status}</span></div>
-            <div class="button-group">
-                <button class="edit" onclick="editOrder(${order.id})">Edit</button>
-                <button class="danger" onclick="deleteOrder(${order.id})">Delete</button>
-            </div>
-        `;
+       box.innerHTML = `
+    <div class="order-line">
+        <span class="label">Date:</span>
+        <span class="value">${order.date}</span>
+    </div>
+
+    <div class="order-line">
+        <span class="label">UDID:</span>
+        <span class="value udid">${order.udid}</span>
+    </div>
+
+    <div class="order-line">
+        <span class="label">Status:</span>
+        <span class="value">
+            <span class="status-badge ${statusClass}">${order.status}</span>
+        </span>
+    </div>
+
+    <div class="button-group">
+        <button class="edit" onclick="editOrder(${order.id})">Edit</button>
+        <button class="danger" onclick="deleteOrder(${order.id})">Delete</button>
+    </div>
+`;
+
         
         list.appendChild(box);
     });
@@ -456,25 +508,10 @@ let date = document.getElementById("dateInput").value;
 // ...
 const orderData = { udid, status, date };
 
-
-
-
-    // server.js
-require('dotenv').config(); // Load environment variables
-const express = require('express');
-const mongoose = require('mongoose');
-// ... other requirements
-
-// Get the URI from the environment variable
-const MONGODB_URI = process.env.MONGODB_URI; 
-
-mongoose.connect(MONGODB_URI)
-    // ... rest of the connection logic
 </script>
 
 
 </body>
 </html>
-
 
 
